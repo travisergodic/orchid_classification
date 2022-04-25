@@ -54,7 +54,7 @@ class Arcface(nn.Module):
             selected_labels = torch.where(torch.gt(theta, math.pi - self._m),
                                           torch.zeros_like(one_hot_labels),
                                           one_hot_labels)
-            final_theta = torch.where(selected_labels.type(torch.ByteTensor).to(theta.device), 
+            final_theta = torch.where(selected_labels > 0, 
                                       theta + self._m,
                                       theta)
             return self._s * torch.cos(final_theta)    
