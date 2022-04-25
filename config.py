@@ -23,11 +23,7 @@ image_transform = transforms.Compose(
 is_arcface = True
 is_mixup = False
 embed_size = 256
-base_model = torchvision.models.resnet50(pretrained=True)
-base_model.fc = nn.Sequential(
-    nn.Dropout(p=0.2),
-    nn.Linear(2048, embed_size, bias=True)
-)
+model_name = 'resnet50'
 
 # train
 lr = 1e-4
