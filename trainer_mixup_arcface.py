@@ -46,13 +46,13 @@ class Trainer:
     def _get_scheduler(self, decay_fn):
         return torch.optim.lr_scheduler.LambdaLR(self.optimizer, lr_lambda= decay_fn)
 
-    def fit(self, model, train_loader, validation_loader, num_epoch, save_config, track=False):
+    def fit(self, model, train_loader, validation_loader, num_epoch, save_config, track=False, verbose=True):
         self.optimizer = self._get_optimizer(model, self.lr)
         self.scheduler = self._get_scheduler(self.decay_fn)
         
         for epoch in range(1, num_epoch+1):
-            self._training_step(model, train_loader, self.loss_fn)
-            val_loss = self._validation_step(model, validation_loader, self.loss_fn, self.metric_dict)
+            self._training_step(model, train_loader, self.loss_fn, verbose)
+            val_loss = self._validation_step(model, validation_loader, self.loss_fn, self.metric_dict, verbose)
 
             if epoch % save_config["freq"] == 0:
                 torch.save(model, save_config["path"])
@@ -61,9 +61,9 @@ class Trainer:
             else: 
                 self.scheduler.step()
 
-    def _training_step(self, model, train_loader, loss_fn): 
+    def _training_step(self, model, train_loader, loss_fn, verbose): 
         model.train()
-        loop = tqdm(train_loader)
+        loop = tqdm(train_loader) if verbose else train_loader
         total_loss = 0 
 
         for batch_idx, (data, targets) in enumerate(loop):
@@ -96,10 +96,11 @@ class Trainer:
             total_loss += loss.item() * data.size(0)
             loop.set_postfix(loss=loss.item())
 
-        print("train_loss:", total_loss/len(train_loader.dataset))
+        if verbose: 
+            print("train_loss:", total_loss/len(train_loader.dataset))
 
     @torch.no_grad()
-    def _validation_step(self, model, validation_loader, loss_fn, metric_dict): 
+    def _validation_step(self, model, validation_loader, loss_fn, metric_dict, verbose): 
         model.eval()
         test_loss = 0
         metric_eval_dict = {k:0 for k in metric_dict}
@@ -118,5 +119,6 @@ class Trainer:
         size = len(validation_loader.dataset)
         test_loss /= size
 
-        print({k:(metric_eval_dict[k]/size).item() for k in metric_eval_dict})
+        if verbose: 
+            print({k:(metric_eval_dict[k]/size).item() for k in metric_eval_dict})
         return test_loss
