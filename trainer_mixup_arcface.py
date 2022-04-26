@@ -40,15 +40,15 @@ class Trainer:
         self.is_arcface = is_arcface
         self.is_mixup = is_mixup
 
-    def _get_optimizer(self, model, lr): 
-        return torch.optim.Adam(model.parameters(), lr=lr)
+    def _get_optimizer(self, model, lr, weight_decay): 
+        return torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
 
     def _get_scheduler(self, decay_fn):
         return torch.optim.lr_scheduler.LambdaLR(self.optimizer, lr_lambda= decay_fn)
 
-    def fit(self, model, train_loader, validation_loader, num_epoch, save_config, track=False, verbose=True):
+    def fit(self, model, train_loader, validation_loader, num_epoch, save_config, weight_decay=0, track=False, verbose=True):
         best_score = 0
-        self.optimizer = self._get_optimizer(model, self.lr)
+        self.optimizer = self._get_optimizer(model, self.lr, self.weight_decay)
         self.scheduler = self._get_scheduler(self.decay_fn)
         
         for epoch in range(1, num_epoch+1):

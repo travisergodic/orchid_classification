@@ -31,6 +31,7 @@ lr = 1e-4
 batch_size = 32
 num_epoch = 20
 loss_fn = nn.NLLLoss()
+weight_decay = 0
 decay_fn = lambda n: 1 if n <=15 else 0.2 
 save_path = os.path.join("./", "classification_resnet50.pth")
 best_path = os.path.join("./", "classification_resnet50_best.pth")
