@@ -31,11 +31,12 @@ class Trainer:
     def __init__(self):
         pass
 
-    def compile(self, lr, decay_fn, loss_fn, metric_dict, is_arcface, is_mixup, device): 
+    def compile(self, lr, decay_fn, loss_fn, weight_decay, metric_dict, is_arcface, is_mixup, device): 
         self.lr = lr
         self.decay_fn = decay_fn 
         self.device = device
         self.loss_fn = loss_fn
+        self.weight_decay = weight_decay
         self.metric_dict = metric_dict
         self.is_arcface = is_arcface
         self.is_mixup = is_mixup
@@ -46,7 +47,7 @@ class Trainer:
     def _get_scheduler(self, decay_fn):
         return torch.optim.lr_scheduler.LambdaLR(self.optimizer, lr_lambda= decay_fn)
 
-    def fit(self, model, train_loader, validation_loader, num_epoch, save_config, weight_decay=0, track=False, verbose=True):
+    def fit(self, model, train_loader, validation_loader, num_epoch, save_config, track=False, verbose=True):
         best_score = 0
         self.optimizer = self._get_optimizer(model, self.lr, self.weight_decay)
         self.scheduler = self._get_scheduler(self.decay_fn)
