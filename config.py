@@ -22,6 +22,7 @@ image_transform = transforms.Compose(
 # model: resnet50 example 
 is_arcface = True
 is_mixup = False
+drop_p = 0.2
 embed_size = 256
 model_name = 'resnet50'
 
@@ -32,6 +33,7 @@ num_epoch = 20
 loss_fn = nn.NLLLoss()
 decay_fn = lambda n: 1 if n <=15 else 0.2 
 save_path = os.path.join("./", "classification_resnet50.pth")
+best_path = os.path.join("./", "classification_resnet50_best.pth")
 
 def Accuracy(predictions, targets):
     return (predictions.argmax(dim=1) == targets).sum()/targets.shape[0]
@@ -43,7 +45,7 @@ metric_dict = {
 
 save_config = {
     "path": save_path,
-    "freq": 1
-    "best_path": best_path
+    "freq": 1,
+    "best_path": best_path,
     "metric": "Accuracy"
 }
