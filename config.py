@@ -31,7 +31,7 @@ batch_size = 32
 num_epoch = 20
 loss_fn = nn.NLLLoss()
 decay_fn = lambda n: 1 if n <=15 else 0.2 
-dst_path = os.path.join("./", "classification_resnet50.pth")
+save_path = os.path.join("./", "classification_resnet50.pth")
 
 def Accuracy(predictions, targets):
     return (predictions.argmax(dim=1) == targets).sum()/targets.shape[0]
@@ -42,6 +42,8 @@ metric_dict = {
 }
 
 save_config = {
-    "path": dst_path, 
+    "path": save_path,
     "freq": 1
+    "best_path": best_path
+    "metric": "Accuracy"
 }

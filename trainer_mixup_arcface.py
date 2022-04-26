@@ -47,19 +47,24 @@ class Trainer:
         return torch.optim.lr_scheduler.LambdaLR(self.optimizer, lr_lambda= decay_fn)
 
     def fit(self, model, train_loader, validation_loader, num_epoch, save_config, track=False, verbose=True):
+        best_score = 0
         self.optimizer = self._get_optimizer(model, self.lr)
         self.scheduler = self._get_scheduler(self.decay_fn)
         
         for epoch in range(1, num_epoch+1):
             self._training_step(model, train_loader, self.loss_fn, verbose)
-            val_loss = self._validation_step(model, validation_loader, self.loss_fn, self.metric_dict, verbose)
+            val_loss, metric_eval_dict = self._validation_step(model, validation_loader, self.loss_fn, self.metric_dict, verbose)
 
             if epoch % save_config["freq"] == 0:
                 torch.save(model, save_config["path"])
+            if best_score < metric_eval_dict[save_config["metric"]]:
+                torch.save(model, save_config["best_path"])
+                best_score = metric_eval_dict[save_config["metric"]]
             if track: 
                 self.scheduler.step(val_loss.item())
             else: 
                 self.scheduler.step()
+        print("best_score:", best_score)
 
     def _training_step(self, model, train_loader, loss_fn, verbose): 
         model.train()
@@ -118,7 +123,8 @@ class Trainer:
     
         size = len(validation_loader.dataset)
         test_loss /= size
+        metric_eval_dict = {k:(metric_eval_dict[k]/size).item() for k in metric_eval_dict}
 
         if verbose: 
-            print({k:(metric_eval_dict[k]/size).item() for k in metric_eval_dict})
-        return test_loss
+            print(metric_eval_dict)
+        return test_loss, metric_eval_dict
