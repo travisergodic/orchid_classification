@@ -2,8 +2,17 @@ import timm
 import torch.nn as nn
 import torchvision
 
-def get_model(name, embed_size, drop_p=0.2): 
-    base_model = timm.create_model(name)
+def get_model(name, embed_size, drop_p=0.2):
+    if name == 'resnet50':
+        base_model = torchvision.models.resnet50(pretrained=True)
+        
+    elif name == 'convnext_base': 
+        base_model = models.convnext_base(pretrained=True)
+        
+    else:
+        base_model = timm.create_model(name, pretrained=True)
+
+
 
     if name == 'vit_small_patch16_384':        
         base_model.head = nn.Sequential(
