@@ -9,11 +9,11 @@ class Model(nn.Module):
         super().__init__()
         self.base_model = base_model
         self.logsoftmax = nn.LogSoftmax(dim=1) 
-        self.arcface_layer = custom_layer
+        self.custom_layer = custom_layer
         
     def forward(self, data, **kwargs): # target_a=None, target_b=None, lam=None): 
         embedding = self.base_model(data)
-        embedding = self.arcface_layer(embedding, **kwargs) # target_a, target_b, lam)
+        embedding = self.custom_layer(embedding, **kwargs) # target_a, target_b, lam)
         return self.logsoftmax(embedding)
 
 
