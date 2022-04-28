@@ -6,7 +6,7 @@ from torchvision import transforms
 from torch import nn
 
 # basic 
-img_size = (448, 448)
+img_size = (384, 384)
 class_num = 219
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -23,18 +23,18 @@ image_transform = transforms.Compose(
 is_arcface = True
 is_mixup = False
 drop_p = 0.2
-embed_size = 256
-model_name = 'resnet50'
+embed_size = 1024
+model_name = 'swin_base_patch4_window12_384_in22k'
 
 # train
 lr = 1e-4
-batch_size = 32
-num_epoch = 20
+batch_size = 16
+num_epoch = 100
 loss_fn = nn.NLLLoss()
 weight_decay = 0
-decay_fn = lambda n: 1 if n <=15 else 0.2 
-save_path = os.path.join("./", "classification_resnet50.pth")
-best_path = os.path.join("./", "classification_resnet50_best.pth")
+decay_fn = lambda n: 1 # if n <=20 else 0.2 
+save_path = os.path.join("./", "classification_swin.pth")
+best_path = os.path.join("./", "classification_swin_best.pth")
 
 def Accuracy(predictions, targets):
     return (predictions.argmax(dim=1) == targets).sum()/targets.shape[0]
