@@ -1,7 +1,7 @@
 import torch
 from tqdm import tqdm 
 import numpy as np
-from sam import SAM
+from sam.sam import SAM
 
 
 class SAM_Trainer:
