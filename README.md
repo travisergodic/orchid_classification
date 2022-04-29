@@ -1,4 +1,4 @@
-# orchid_classification
+# Orchid Classification
 
 ## Environment 
 ```
