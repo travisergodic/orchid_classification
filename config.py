@@ -20,6 +20,7 @@ image_transform = transforms.Compose(
 )
 
 # model: resnet50 example 
+is_sam = True
 is_arcface = True
 is_mixup = False
 drop_p = 0.2
