@@ -11,13 +11,25 @@ class_num = 219
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # data augmentation
-image_transform = transforms.Compose(
+test_image_transform = transforms.Compose(
     [
         transforms.Resize(img_size),
         transforms.ToTensor(),
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ]
 )
+
+train_image_transform = transforms.Compose(
+    [
+        transforms.Resize(img_size),
+        transforms.RandomAffine(degrees=(-15, 15), translate=(-0.1, 0.1)),
+        transforms.RandomHorizontalFlip(p=0.2),
+        transforms.RandomVerticalFlip(p=0.2)
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+    ]
+)
+
 
 # model: resnet50 example 
 is_sam = True

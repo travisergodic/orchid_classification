@@ -1,6 +1,6 @@
+# reference: https://github.com/chinhsuanwu/coatnet-pytorch
 import torch
 import torch.nn as nn
-
 from einops import rearrange
 from einops.layers.torch import Rearrange
 
@@ -199,7 +199,7 @@ class Transformer(nn.Module):
 
 
 class CoAtNet(nn.Module):
-    def __init__(self, image_size, in_channels, num_blocks, channels, num_classes=1000, block_types=['C', 'C', 'T', 'T']):
+    def __init__(self, image_size, in_channels, num_blocks, channels, block_types=['C', 'C', 'T', 'T']):
         super().__init__()
         ih, iw = image_size
         block = {'C': MBConv, 'T': Transformer}
@@ -216,7 +216,7 @@ class CoAtNet(nn.Module):
             block[block_types[3]], channels[3], channels[4], num_blocks[4], (ih // 32, iw // 32))
 
         self.pool = nn.AvgPool2d(ih // 32, 1)
-        self.fc = nn.Linear(channels[-1], num_classes, bias=False)
+        # self.fc = nn.Linear(channels[-1], num_classes, bias=False)
 
     def forward(self, x):
         x = self.s0(x)
@@ -226,7 +226,7 @@ class CoAtNet(nn.Module):
         x = self.s4(x)
 
         x = self.pool(x).view(-1, x.shape[1])
-        x = self.fc(x)
+        # x = self.fc(x)
         return x
 
     def _make_layer(self, block, inp, oup, depth, image_size):
@@ -239,34 +239,34 @@ class CoAtNet(nn.Module):
         return nn.Sequential(*layers)
 
 
-def coatnet_0():
+def coatnet_0(img_size):
     num_blocks = [2, 2, 3, 5, 2]            # L
     channels = [64, 96, 192, 384, 768]      # D
-    return CoAtNet((224, 224), 3, num_blocks, channels, num_classes=1000)
+    return CoAtNet(img_size, 3, num_blocks, channels)
 
 
-def coatnet_1():
+def coatnet_1(img_size):
     num_blocks = [2, 2, 6, 14, 2]           # L
     channels = [64, 96, 192, 384, 768]      # D
-    return CoAtNet((224, 224), 3, num_blocks, channels, num_classes=1000)
+    return CoAtNet(img_size, 3, num_blocks, channels)
 
 
-def coatnet_2():
+def coatnet_2(img_size):
     num_blocks = [2, 2, 6, 14, 2]           # L
     channels = [128, 128, 256, 512, 1026]   # D
-    return CoAtNet((224, 224), 3, num_blocks, channels, num_classes=1000)
+    return CoAtNet(img_size, 3, num_blocks, channels)
 
 
-def coatnet_3():
+def coatnet_3(img_size):
     num_blocks = [2, 2, 6, 14, 2]           # L
     channels = [192, 192, 384, 768, 1536]   # D
-    return CoAtNet((224, 224), 3, num_blocks, channels, num_classes=1000)
+    return CoAtNet(img_size, 3, num_blocks, channels)
 
 
-def coatnet_4():
+def coatnet_4(img_size):
     num_blocks = [2, 2, 12, 28, 2]          # L
     channels = [192, 192, 384, 768, 1536]   # D
-    return CoAtNet((224, 224), 3, num_blocks, channels, num_classes=1000)
+    return CoAtNet(img_size, 3, num_blocks, channels)
 
 
 def count_parameters(model):
