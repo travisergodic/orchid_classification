@@ -5,14 +5,15 @@ import torch.nn as nn
 
 # final model 
 class Model(nn.Module):
-    def __init__(self, base_model, custom_layer): 
+    def __init__(self, base_model, custom_layer, logits=True): 
         super().__init__()
         self.base_model = base_model
         self.logsoftmax = nn.LogSoftmax(dim=1) 
         self.custom_layer = custom_layer
+        self.logits = logits
         
-    def forward(self, data, **kwargs): # target_a=None, target_b=None, lam=None): 
-        embedding = self.base_model(data)
+    def forward(self, data, **kwargs): # target_a=None, target_b=None, lam=None):   
+        embedding = self.base_model(data).logits if self.logits else self.base_model(data)
         embedding = self.custom_layer(embedding, **kwargs) # target_a, target_b, lam)
         return self.logsoftmax(embedding)
 
