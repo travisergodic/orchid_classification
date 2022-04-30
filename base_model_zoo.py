@@ -2,6 +2,7 @@ import timm
 import torch.nn as nn
 import torchvision
 from models import coatnet
+from config import img_size
 
 
 def remove_fc(model): 
@@ -16,7 +17,7 @@ def get_model(name, embed_size, drop_p=0.2):
     if name in ['resnet50', 'convnext_base']:
         base_model = getattr(torchvision.models, name)(pretrained=True)
      
-    elif name[:8] == 'coatnet_':
+    elif name[:8] == 'coatnet_0':
         assert hasattr(coatnet, name), f"No model name: {name}"
         base_model = getattr(coatnet, name)(img_size)
         
