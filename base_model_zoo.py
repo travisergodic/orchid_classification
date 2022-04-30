@@ -53,4 +53,11 @@ def get_model(name, embed_size, drop_p=0.2):
         #     nn.Linear(2048, embed_size, bias=True)
         # )
         remove_fc(base_model)
+
+    elif name == 'convnext_base':
+        base_model.classifier = nn.Sequential(
+            *(list(base_model.classifier)[:-1])
+            )
+
+
     return base_model
