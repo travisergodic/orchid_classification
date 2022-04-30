@@ -22,9 +22,9 @@ test_image_transform = transforms.Compose(
 train_image_transform = transforms.Compose(
     [
         transforms.Resize(img_size),
-        transforms.RandomAffine(degrees=(-15, 15), translate=(-0.1, 0.1)),
+        transforms.RandomAffine(degrees=(-15, 15), translate=(0.1, 0.1)),
         transforms.RandomHorizontalFlip(p=0.2),
-        transforms.RandomVerticalFlip(p=0.2)
+        transforms.RandomVerticalFlip(p=0.2),
         transforms.ToTensor(),
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ]
