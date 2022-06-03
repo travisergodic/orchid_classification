@@ -45,9 +45,9 @@ class Cutmix_Iter_Hook(Base_Iter_Hook):
     def run_iter(self, model, data, targets, trainer, criterion):
         with torch.cuda.amp.autocast():
             # forward
-            data, targets = cutmix_data(data, targets)
-            predictions = model(data)
-            loss = criterion(predictions, targets)
+            mixed_data, targets_a, targets_b, lam = cutmix_data(data, targets)
+            predictions = model(mixed_data)
+            loss = mixup_criterion(targets_a, targets_b, lam)(criterion, predictions)
             
             # backward
             trainer.optimizer.zero_grad()

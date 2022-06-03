@@ -14,7 +14,7 @@ class_num = 219
 num_workers = 2
 
 # regularization 
-regularization_option = 'sam'
+regularization_option = 'normal'
 
 # train
 lr = 1e-4
@@ -31,16 +31,17 @@ optim_dict = {
 
 #  model
 checkpoint_path = None
-model_dict = {
+base_model_dict = {
     'model_cls': transformers.ConvNextForImageClassification.from_pretrained,
-    'name': 'facebook/convnext-base-384-22k-1k'
+    'pretrained_model_name_or_path': 'facebook/convnext-base-384-22k-1k'
 }
+
 hugging_face = True
-custom_layer_dict = {
-    'name': 'arcface', 
-    's': 2,
-    'm': 0.05
+
+custom_layer_config_dict = {
+    'layer_cls': 'ffn'
 }
+
 
 # save path 
 save_path = os.path.join("./checkpoints", "model_v1.pt")
@@ -48,7 +49,7 @@ best_path = os.path.join("./checkpoints", "model_v1_best.pt")
 
 # metrics & loss
 def Accuracy(predictions, targets):
-    return (predictions.argmax(dim=1) == targets).sum()/targets.shape[0]
+    return (predictions.argmax(dim=1) == targets.argmax(dim=1)).sum()/targets.shape[0]
 
 metric_dict = {
     "Accuracy": Accuracy,

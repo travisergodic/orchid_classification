@@ -76,7 +76,8 @@ class Trainer:
             data = data.to(device=self.device)
             targets = targets.type(torch.float).to(device=self.device)
 
-            loss = criterion(model(data), targets)
+            predictions = model(data)
+            loss = criterion(predictions, targets)
             test_loss += loss.item() * targets.size(0)
             size += targets.size(0)
             

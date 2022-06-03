@@ -3,6 +3,7 @@ from PIL import Image
 import torch.nn as nn
 from torch.utils.data import Dataset
 from torchvision import transforms
+import torch
 
 ## dataset
 class FlowerDataset(Dataset):
@@ -23,7 +24,7 @@ class FlowerDataset(Dataset):
         if self.image_transform is not None:
             image = self.image_transform(image)
 
-        label = nn.functional.one_hot(label, num_classes=self.num_classes)
+        label = nn.functional.one_hot(torch.tensor(label), num_classes=self.num_classes)
         return image, label
 
     def __len__(self):

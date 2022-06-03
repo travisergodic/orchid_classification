@@ -46,9 +46,7 @@ def cutmix_data(x, y, alpha=1., device='cuda'):
     y1 = int(np.round(min(cy + h / 2, image_h)))
 
     x[:, :, y0:y1, x0:x1] = shuffled_x[:, :, y0:y1, x0:x1]
-    y[:, y0:y1, x0:x1] = shuffled_y[:, y0:y1, x0:x1]
-    
-    return x, y
+    return x, y, shuffled_y, lam
 
 
 def half_cutmix_data(x, y, p=0.5, device='cuda'): 

@@ -2,7 +2,7 @@ import math
 import torch
 import torch.nn as nn
 
-__all__ = ['custom_layer_dict', 'get_base_model', 'Model']
+__all__ = ['CUSTOM_LAYER_dict', 'get_base_model', 'Model']
 
 # base_model
 def get_base_model(model_dict):
@@ -112,5 +112,5 @@ class Arcface_Mixup(nn.Module):
 
 CUSTOM_LAYER_dict = {
     'arcface': Arcface, 
-    'normal': FFN
+    'ffn': FFN
 }
