@@ -24,5 +24,5 @@ python test.py --model_paths "./checkpoints/model_v1.pt" --img_dir "./training"
 
 ## 預測
 ```
-python predict.py --model_paths "./checkpoints/model_v1.pt" --img_dir "./training" --do_tta "True"
+python predict.py --model_paths "./checkpoints/model_v1.pt" --target_dir "./training" --do_tta "True"
 ```

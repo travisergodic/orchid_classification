@@ -25,7 +25,7 @@ class Evaluator:
     def _wrap_TTA(self, tta_transform): 
         if tta_transform:
             return [
-                tta.SegmentationTTAWrapper(model, tta_transform, merge_mode='mean').eval() 
+                tta.ClassificationTTAWrapper(model, tta_transform, merge_mode='mean').eval() 
                 for model in self.models
             ]
         return [model.eval() for model in self.models]
@@ -42,7 +42,7 @@ class Evaluator:
     def evaluate(self, image_paths, label_list, metric, tta_transform=False):
         if type(image_paths) == str: 
             assert os.path.isdir(image_paths), f"{image_paths} is not a directory!"
-            image_paths = sorted([os.path.join(image_paths, basename) for basename in os.listdir(image_paths)])
+            image_paths = sorted([os.path.join(image_paths, basename) for basename in os.listdir(image_paths) if basename.endswith('jpg') or basename.endswith('png')])
         assert len(image_paths) == len(label_list)
         
         models = self._wrap_TTA(tta_transform)
@@ -56,7 +56,7 @@ class Evaluator:
         if type(paths) == str: 
             assert os.path.isdir(paths), f"{paths} is not a directory!"
             img_dir = paths
-            paths = [os.path.join(paths, basename) for basename in os.listdir(paths)]
+            paths = [os.path.join(paths, basename) for basename in os.listdir(paths) if basename.endswith('jpg') or basename.endswith('png')]
             print(f"Find {len(paths)} files under {img_dir}")
         else: 
             assert all([os.path.isfile(path) for path in paths])
@@ -72,7 +72,8 @@ class Evaluator:
                 'filename': [os.path.basename(path) for path in paths],
                 'label': res_list
             }
-        ).to('./predict_result.csv', index=False)
+        ).to_csv('./predict_result.csv', index=False)
+        print("save prediction results at './predict_result.csv'")
 
     @staticmethod
     def accuracy(preds, targets):

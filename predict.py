@@ -16,7 +16,7 @@ def boolean_string(s):
 
 def make_prediction(model_paths, image_dir, do_tta):
     # load models
-    models = [torch.load(model_path).strip() for model_path in model_paths.split(",")]
+    models = [torch.load(model_path.strip()) for model_path in model_paths.split(",")]
 
     test_image_transforms =  [build_test_transform(img_size) for img_size in test_img_size_list]
     evaluator = Evaluator(models, 

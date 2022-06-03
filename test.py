@@ -24,10 +24,10 @@ def evaluate_all(model_paths, test_image_path_list, test_label_list):
     evaluator = Evaluator(models, test_image_transforms, device=DEVICE, activation=activation)
     ## no TTA
     score = evaluator.evaluate(test_image_path_list, test_label_list, metric, False)
-    print(f"No TTA: {score} (Dice score).")
+    print(f"No TTA: {score} ({metric} score).")
     ## TTA
     score = evaluator.evaluate(test_image_path_list, test_label_list, metric, tta_fn)
-    print(f"With TTA: {score} (Dice score).")   
+    print(f"With TTA: {score} ({metric} score).")   
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Image classification for flowers!")
