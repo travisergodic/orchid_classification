@@ -36,7 +36,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # read test file
-    df_test_label = pd.read_csv('./test_label.csv')
+    df_test_label = pd.read_csv('./Labels/test_label.csv')
     test_image_path_list = [os.path.join(args.img_dir, filename) for filename in list(df_test_label['filename'])] 
     test_label_list = list(df_test_label['category'])
 

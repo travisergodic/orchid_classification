@@ -25,8 +25,8 @@ with open('./configs/config.py', 'w') as f:
 from configs.config import *
 
 ## dataset & dataloader
-df_train_label = pd.read_csv('./train_label.csv')
-df_test_label = pd.read_csv('./test_label.csv')
+df_train_label = pd.read_csv('./Labels/train_label.csv')
+df_test_label = pd.read_csv('./Labels/test_label.csv')
 
 # dataset
 train_dataset = FlowerDataset('./training', df_train_label, class_num, build_train_transform(img_size))
