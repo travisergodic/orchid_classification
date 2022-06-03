@@ -36,9 +36,11 @@ model_dict = {
     'name': 'facebook/convnext-base-384-22k-1k'
 }
 hugging_face = True
-
-do_arcface = False
-s, m = 2, 0.05
+custom_layer_dict = {
+    'name': 'arcface', 
+    's': 2,
+    'm': 0.05
+}
 
 # save path 
 save_path = os.path.join("./checkpoints", "model_v1.pt")

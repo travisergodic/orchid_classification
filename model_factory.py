@@ -2,6 +2,7 @@ import math
 import torch
 import torch.nn as nn
 
+__all__ = ['custom_layer_dict', 'get_base_model', 'Model']
 
 # base_model
 def get_base_model(model_dict):
@@ -108,28 +109,8 @@ class Arcface_Mixup(nn.Module):
                                           one_hot_labels)
             final_theta = torch.where(selected_labels > 0, theta + margin, theta)
             return self._s * torch.cos(final_theta)
-        
 
-if __name__ == '__main__': 
-    # hyperparameters
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    is_arcface = True
-    is_mixup = True
-    num_classes = 219
-    embed_size = 256
-    
-    # base model: resnet50 example 
-    base_model = torchvision.models.resnet50(pretrained=True)
-    base_model.fc = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(2048, 256, bias=True)
-    )
- 
-    # custom layer 
-    if is_arcface: 
-        custom_layer = Arcface_Mixup(num_classes, embed_size) if is_mixup else Arcface(num_classes, embed_size)
-    else: 
-        custom_layer = FFN(embed_size, num_classes)
-        
-    # final model 
-    model = Model(base_model, custom_layer).to(device)
+CUSTOM_LAYER_dict = {
+    'arcface': Arcface, 
+    'normal': FFN
+}

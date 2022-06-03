@@ -1,3 +1,4 @@
+import os
 import time
 import argparse
 import pandas as pd
@@ -5,7 +6,8 @@ from torch.utils.data import DataLoader
 from data import FlowerDataset, build_train_transform, build_test_transform
 from trainer import Trainer
 from hooks import Iter_Hook_dict, Normal_Iter_Hook
-from model_and_layer import *
+from model_factory import *
+import torch.nn as nn
 
 
 def train(): 
@@ -27,7 +29,11 @@ def train():
         print(f'Load model from {checkpoint_path} successfully!')
     else:
         base_model, in_features = get_base_model(model_dict)
-        custom_layer = FFN(in_features, class_num)
+        custom_layer_dict = {
+            **custom_layer_dict, 
+            **{'num_classes': class_num, 'embed_size': in_features}
+        }
+        custom_layer = CUSTOM_LAYER_dict.get(custom_layer_dict.pop('name'))(**custom_layer_dict)
         model = Model(base_model, custom_layer, hugging_face=hugging_face).to(DEVICE)
 
     # distributed 
