@@ -3,19 +3,33 @@ import torch
 import torch.nn as nn
 
 
+# base_model
+def get_base_model(model_dict):
+    raw_model = model_dict['model_cls'](**{k:model_dict[k] for k in model_dict if k != 'model_cls'})
+    for attr in ['fc', 'head', 'classifier']: 
+        if hasattr(raw_model, attr): 
+            in_features = getattr(raw_model, attr).in_features
+            setattr(
+                raw_model, 
+                attr, 
+                nn.Identity()
+            )
+            return raw_model, in_features  
+
+
 # final model 
 class Model(nn.Module):
-    def __init__(self, base_model, custom_layer, logits=True): 
+    def __init__(self, base_model, custom_layer, hugging_face=False): 
         super().__init__()
         self.base_model = base_model
-        self.logsoftmax = nn.LogSoftmax(dim=1) 
         self.custom_layer = custom_layer
-        self.logits = logits
+        self.hugging_face = hugging_face
         
     def forward(self, data, **kwargs): # target_a=None, target_b=None, lam=None):   
-        embedding = self.base_model(data).logits if self.logits else self.base_model(data)
-        embedding = self.custom_layer(embedding, **kwargs) # target_a, target_b, lam)
-        return self.logsoftmax(embedding)
+        embedding = self.base_model(data)
+        if self.hugging_face: 
+            embedding = embedding.logits
+        return self.custom_layer(embedding, **kwargs) # target_a, target_b, lam)
 
 
 # FFN

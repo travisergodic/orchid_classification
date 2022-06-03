@@ -2,18 +2,8 @@ import timm
 import torch.nn as nn
 import torchvision
 from models import coatnet
-from config import img_size
-import transformers
 
 
-def remove_fc(model): 
-    attrs = ['fc', 'head', 'classifier']
-    for attr in attrs: 
-        if hasattr(model, attr): 
-            setattr(model, attr, nn.Identity())
-            break
-
-            
 def get_model(name, embed_size, drop_p=0.2):
     if name in ['resnet50', 'convnext_base']:
         base_model = getattr(torchvision.models, name)(pretrained=True)
@@ -23,47 +13,19 @@ def get_model(name, embed_size, drop_p=0.2):
         base_model = getattr(coatnet, name)(img_size)
         
     elif name == "facebook/convnext-base-384-22k-1k": 
-        base_model = transformers.ConvNextForImageClassification.from_pretrained(name)
+        base_model = lambda x: transformers.ConvNextForImageClassification.from_pretrained(name)(x).logits
 
     else: 
         base_model = timm.create_model(name, pretrained=True)
         
     ####################################################################
-    
-    if name == 'vit_small_patch16_384':        
-        # base_model.head = nn.Sequential(
-        #     nn.Dropout(p=drop_p),
-        #     nn.Linear(384, embed_size, bias=True)
-        #     )
-        remove_fc(base_model)
 
-    elif name == 'swin_base_patch4_window12_384_in22k':
-        # base_model.head = nn.Sequential(
-        #     nn.Dropout(p=drop_p),
-        #     nn.Linear(1024, embed_size, bias=True)
-        # )
-        base_model.head = nn.Identity()
-
-    elif name == 'efficientnetv2_rw_s': 
-        # base_model.classifier = nn.Sequential(
-        #     nn.Dropout(p=drop_p),
-        #     nn.Linear(1792, embed_size, bias=True)
-        # )
-        remove_fc(base_model)
-
-    elif name == 'resnet50':
-        # base_model.fc = nn.Sequential(
-        #     nn.Dropout(p=drop_p),
-        #     nn.Linear(2048, embed_size, bias=True)
-        # )
-        remove_fc(base_model)
-
-    elif name == 'convnext_base':
+    # remove fc
+    if name == 'convnext_base':
         base_model.classifier = nn.Sequential(
             *(list(base_model.classifier)[:-1])
-            )
-
-    elif name == "facebook/convnext-base-384-22k-1k":
+        )
+    else:
         remove_fc(base_model)
         
     return base_model
