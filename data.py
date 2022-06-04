@@ -59,7 +59,7 @@ class Train_Preprocessor(nn.Module):
         )
     
     @torch.no_grad()
-    def forward(self, img, label): 
+    def forward(self, img): 
         # random crop
         W, H = img.size
         w, h = random.randint(int(0.90*W), W), random.randint(int(0.90*H), H)
@@ -77,7 +77,7 @@ class Train_Preprocessor(nn.Module):
         if random.random() < self.v_flip_p:
             img = F.vflip(img)       
 
-        return self.preprocess(img), label
+        return self.preprocess(img)
 
 
 Test_Preprocessor = lambda img_size: transforms.Compose(

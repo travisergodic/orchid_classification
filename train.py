@@ -30,8 +30,8 @@ from configs.config import *
 df_train_label = pd.read_csv('./Labels/train_label.csv')
 df_test_label = pd.read_csv('./Labels/test_label.csv')
 
-print("Training: {df_train_label.shape[0]} of samples!")
-print("Validation: {df_test_label.shape[0]} of samples!")
+print(f"Training: {df_train_label.shape[0]} of samples!")
+print(f"Validation: {df_test_label.shape[0]} of samples!")
 
 # dataset
 train_dataset = FlowerDataset('./training', df_train_label, class_num, Train_Preprocessor(img_size))

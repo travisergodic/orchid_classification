@@ -43,7 +43,7 @@ base_model_dict = {
     'pretrained': True
 }
 
-hugging_face = True
+hugging_face = False
 
 custom_layer_config_dict = {
     'layer_cls': 'ffn'
