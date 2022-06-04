@@ -22,7 +22,7 @@ num_epoch = 100
 decay_fn = lambda n: 1 # if n <=20 else 0.2 
 optim_dict = {
     'optim_cls': optim.Adam, 
-    'lr': 1e-4, 
+    'lr': 2e-5, 
     # 'weight_decay': 1e-3
 }
 
@@ -35,10 +35,10 @@ loss_config = {
 metric_list = ['accuracy', 'mix_score']
 
 #  model
-checkpoint_path = None
+checkpoint_path = "/content/orchid_classification/checkpoints/model_v1.pt"
 base_model_dict = {
     'model_cls': timm.create_model,
-    'model_name': 'tf_efficientnetv2_l_in21k', 
+    'model_name': 'convnext_base_384_in22ft1k', 
     'pretrained': True
 }
 

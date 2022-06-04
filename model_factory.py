@@ -8,13 +8,22 @@ __all__ = ['CUSTOM_LAYER', 'get_base_model', 'Model']
 def get_base_model(model_dict):
     raw_model = model_dict['model_cls'](**{k:model_dict[k] for k in model_dict if k != 'model_cls'})
     for attr in ['fc', 'head', 'classifier']: 
-        if hasattr(raw_model, attr): 
-            in_features = getattr(raw_model, attr).in_features
-            setattr(
-                raw_model, 
-                attr, 
-                nn.Identity()
-            )
+        if hasattr(raw_model, attr):
+            if isinstance(getattr(raw_model, attr), nn.Sequential):
+                in_features = getattr(raw_model, attr).fc.in_features
+                setattr(
+                    raw_model,
+                    attr,
+                    nn.Sequential(*list(getattr(raw_model, attr))[:-2])
+                )
+                
+            else: 
+                in_features = getattr(raw_model, attr).in_features
+                setattr(
+                    raw_model, 
+                    attr, 
+                    nn.Identity()
+                )
             return raw_model, in_features  
 
 

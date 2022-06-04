@@ -38,7 +38,7 @@ metric_list = ['accuracy', 'mix_score']
 checkpoint_path = None
 base_model_dict = {
     'model_cls': timm.create_model,
-    'model_name': 'tf_efficientnetv2_l_in21k', 
+    'model_name': 'convnext_large_384_in22ft1k', 
     'pretrained': True
 }
 

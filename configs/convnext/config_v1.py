@@ -16,7 +16,6 @@ num_workers = 2
 regularization_option = 'normal'
 
 # train
-lr = 1e-4
 batch_size = 16
 num_epoch = 100
 decay_fn = lambda n: 1 # if n <=20 else 0.2 
