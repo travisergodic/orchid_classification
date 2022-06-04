@@ -10,7 +10,6 @@ from model_factory import *
 import torch.nn as nn
 import torch
 
-
 def train(): 
     ## dataset & dataloader
     df_train_label = pd.read_csv('./train_label.csv')

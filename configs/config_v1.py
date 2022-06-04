@@ -1,7 +1,6 @@
 import os
 import torch 
 from torch import optim
-from loss import Loss
 import transformers
 
 # basic
@@ -20,14 +19,21 @@ regularization_option = 'normal'
 lr = 1e-4
 batch_size = 16
 num_epoch = 100
-loss_fn = Loss()
-weight_decay = 0
 decay_fn = lambda n: 1 # if n <=20 else 0.2 
 optim_dict = {
     'optim_cls': optim.AdamW, 
     'lr': 1e-4, 
     'weight_decay': 3e-3
 }
+
+
+# loss & metric
+loss_config = {
+    'loss_cls': 'Loss'
+} 
+
+
+metric_list = ['accuracy', 'mix_score']
 
 #  model
 checkpoint_path = None
@@ -47,18 +53,9 @@ custom_layer_config_dict = {
 save_path = os.path.join("./checkpoints", "model_v1.pt")
 best_path = os.path.join("./checkpoints", "model_v1_best.pt")
 
-# metrics & loss
-def Accuracy(predictions, targets):
-    return (predictions.argmax(dim=1) == targets.argmax(dim=1)).sum()/targets.shape[0]
-
-metric_dict = {
-    "Accuracy": Accuracy,
-    "CE": Loss()
-}
-
 save_config = {
     "path": save_path,
     "freq": 1,
     "best_path": best_path,
-    "metric": "Accuracy"
+    "metric": "accuracy"
 }

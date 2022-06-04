@@ -1,4 +1,3 @@
-import cv2
 import os 
 import torch 
 import torch.nn as nn
@@ -7,6 +6,8 @@ from PIL import Image
 import numpy as np
 import pandas as pd
 import ttach as tta
+from sklearn.metrics import f1_score
+
 
 class Evaluator:
     def __init__(self, models, image_transforms, device='cuda', activation=nn.Softmax(dim=1)):
@@ -34,8 +35,8 @@ class Evaluator:
     def _predict(self, models, path):
         ensemble_res = [] 
         img = Image.open(path).convert('RGB')
-        for i, model in enumerate(models): 
-            X = self.image_transforms[i](img).unsqueeze(0).to(self.device) 
+        for model, image_transform in zip(models, self.image_transforms): 
+            X = image_transform(img).unsqueeze(0).to(self.device) 
             ensemble_res.append(model(X).squeeze())
         return sum(ensemble_res).argmax().item()
     
@@ -83,5 +84,9 @@ class Evaluator:
 
     @staticmethod
     def f1_score(preds, targets): 
-        pass
+        return f1_score(targets, preds, average='macro')
+
+    @staticmethod
+    def averge_score(preds, targets, weight=0.5): 
+        return weight * Evaluator.accuracy(preds, targets) + (1-weight) * Evaluator.f1_score(preds, targets)
         

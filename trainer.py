@@ -69,8 +69,10 @@ class Trainer:
     def _validation_step(self, model, validation_loader, criterion, metric_dict): 
         model.eval()
         test_loss = 0
-        size = 0 
         metric_eval_dict = {k:0 for k in metric_dict}
+
+        pred_list = []
+        target_list = []
 
         for data, targets in validation_loader:
             data = data.to(device=self.device)
@@ -79,12 +81,13 @@ class Trainer:
             predictions = model(data)
             loss = criterion(predictions, targets)
             test_loss += loss.item() * targets.size(0)
-            size += targets.size(0)
-            
-            for metric_name in metric_dict: 
-                metric_eval_dict[metric_name] += metric_dict[metric_name](predictions, targets)*targets.size(0)
-                
-        test_loss /= size
+        
+            pred_list.extend(predictions.argmax(dim=1).tolist())
+            target_list.extend(targets.argmax(dim=1).tolist())
+        test_loss /= len(pred_list)
 
-        print({k:(metric_eval_dict[k]/size).item() for k in metric_eval_dict})
+        for metric_name in metric_dict: 
+            metric_eval_dict[metric_name] = metric_dict[metric_name](pred_list, target_list)
+
+        print(metric_eval_dict)
         return test_loss
