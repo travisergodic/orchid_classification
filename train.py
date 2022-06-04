@@ -73,6 +73,6 @@ loss_obj = loss_cls(**loss_config)
 
 ## get metric 
 metric_dict = {metric: METRIC[metric] for metric in metric_list}
-train_pipeline = Trainer(optim_dict, decay_fn, loss_obj, metric_dict, iter_hook_obj(), DEVICE)
+train_pipeline = Trainer(optim_dict, decay_fn, loss_obj, metric_dict, iter_hook_obj, DEVICE)
 train_pipeline.fit(model, train_dataloader, test_dataloader, num_epoch, save_config)
 print(f"Training takes {time.time() - start} seconds!")
