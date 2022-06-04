@@ -5,7 +5,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from data import FlowerDataset, build_train_transform, build_test_transform
+from data import FlowerDataset, Train_Preprocessor, Test_Preprocessor
 from trainer import Trainer
 from hooks import *
 from model_factory import *
@@ -30,9 +30,12 @@ from configs.config import *
 df_train_label = pd.read_csv('./Labels/train_label.csv')
 df_test_label = pd.read_csv('./Labels/test_label.csv')
 
+print("Training: {df_train_label.shape[0]} of samples!")
+print("Validation: {df_test_label.shape[0]} of samples!")
+
 # dataset
-train_dataset = FlowerDataset('./training', df_train_label, class_num, build_train_transform(img_size))
-test_dataset = FlowerDataset('./training', df_test_label, class_num, build_test_transform(img_size))
+train_dataset = FlowerDataset('./training', df_train_label, class_num, Train_Preprocessor(img_size))
+test_dataset = FlowerDataset('./training', df_test_label, class_num, Test_Preprocessor(img_size))
 
 # dataloader
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
@@ -76,5 +79,4 @@ metric_dict = {metric: METRIC[metric] for metric in metric_list}
 train_pipeline = Trainer(optim_dict, decay_fn, loss_obj, metric_dict, iter_hook_obj, DEVICE)
 train_pipeline.fit(model, train_dataloader, test_dataloader, num_epoch, save_config)
 print(f"Training takes {time.time() - start} seconds!")
-
 os.remove("./configs/config.py")

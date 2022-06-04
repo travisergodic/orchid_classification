@@ -1,9 +1,13 @@
 import os
+import random
 from PIL import Image
+import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
 from torchvision import transforms
-import torch
+from torchvision.transforms.functional import InterpolationMode
+import torchvision.transforms.functional as F
+
 
 ## dataset
 class FlowerDataset(Dataset):
@@ -32,20 +36,53 @@ class FlowerDataset(Dataset):
 
 
 # transform 
-build_test_transform = lambda img_size: transforms.Compose(
-    [
-        transforms.Resize(img_size),
-        transforms.ToTensor(),
-        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-    ]
-)
+class Train_Preprocessor(nn.Module): 
+    def __init__(self, img_size=None, h_flip_p=0.2, v_flip_p=0.2):
+        super().__init__()
+        if img_size is not None: 
+            self.img_size = img_size
+            self.resize_image = transforms.Resize(self.img_size, interpolation=InterpolationMode.BILINEAR)  
+        else: 
+            self.resize_image = nn.Identity()
+            
+        self.jitter = transforms.ColorJitter(0.15, 0.15)
+        self.blur = transforms.GaussianBlur((1, 3))
+        
+        self.h_flip_p = h_flip_p
+        self.v_flip_p = v_flip_p
+        
+        self.preprocess = transforms.Compose(
+            [
+              transforms.ToTensor(),
+              transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+            ]
+        )
+    
+    @torch.no_grad()
+    def forward(self, img, label): 
+        # random crop
+        W, H = img.size
+        w, h = random.randint(int(0.90*W), W), random.randint(int(0.90*H), H)
+        i, j = random.randint(0, H-h), random.randint(0, W-w)
+        img = F.crop(img, i, j, h, w)
 
-build_train_transform = lambda img_size: transforms.Compose(
+        # resize & color transform 
+        img = self.blur(self.jitter(self.resize_image(img)))
+
+        # Random horizontal flipping
+        if random.random() < self.h_flip_p:
+            img = F.hflip(img)
+
+        # Random vertical flipping
+        if random.random() < self.v_flip_p:
+            img = F.vflip(img)       
+
+        return self.preprocess(img), label
+
+
+Test_Preprocessor = lambda img_size: transforms.Compose(
     [
-        transforms.Resize(img_size),
-        transforms.RandomAffine(degrees=(-15., 1.), translate=(0.1, 0.1)),
-        transforms.RandomHorizontalFlip(p=0.2),
-        transforms.RandomVerticalFlip(p=0.2),
+        transforms.Resize(img_size, interpolation=InterpolationMode.BILINEAR),
         transforms.ToTensor(),
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ]
