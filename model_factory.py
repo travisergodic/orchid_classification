@@ -15,14 +15,16 @@ def get_base_model(model_dict):
     for attr in ['fc', 'head', 'classifier']: 
         if hasattr(raw_model, attr):
             if isinstance(getattr(raw_model, attr), nn.Sequential):
+                print(getattr(raw_model, attr))
                 in_features = getattr(raw_model, attr).fc.in_features
                 setattr(
-                    raw_model,
-                    attr,
-                    nn.Sequential(*list(getattr(raw_model, attr))[:-2])
+                    getattr(raw_model, attr),
+                    'fc',
+                    nn.Identity()
                 )
-                
+                print(getattr(raw_model, attr))
             else: 
+                print(getattr(raw_model, attr))
                 in_features = getattr(raw_model, attr).in_features
                 setattr(
                     raw_model, 
@@ -49,30 +51,32 @@ class Model(nn.Module):
 
 # FFN
 class FFN(nn.Module): 
-    def __init__(self, embed_size, num_classes):
+    def __init__(self, embed_size, num_classes, drop_p=0.):
         super().__init__()
         self.ffn = nn.Linear(embed_size, num_classes)
+        self.drop = nn.Dropout(p=drop_p)
     
-    def forward(self, embedding, targets=None): 
-        return self.ffn(embedding)
+    def forward(self, embedding, targets=None):
+        return self.ffn(self.drop(embedding))
 
     
 # Arcface: arcface 不支援與 mixup, cutmix 混用 
 class Arcface(nn.Module):
-    def __init__(self, embed_size, num_classes, s=2, m=0.05, eps=1e-12):
+    def __init__(self, embed_size, num_classes, s=2, m=0.05, eps=1e-12, drop_p=0.):
         super().__init__()
         self._n_classes = num_classes
         self._embed_dim = embed_size
         self._s = float(s)
         self._m = float(m)
         self.eps = eps
+        self.drop = nn.Dropout(p=drop_p)
         self.kernel = nn.Parameter(torch.Tensor(embed_size, num_classes))
         torch.nn.init.xavier_uniform_(self.kernel)
         
     def forward(self, embedding, targets):  # target: 
         embedding = nn.functional.normalize(embedding, dim=1)
         kernel_norm = nn.functional.normalize(self.kernel, dim=0)
-        cos_theta = torch.mm(embedding, kernel_norm)
+        cos_theta = torch.mm(self.drop(embedding), kernel_norm)
         
         if self.training:  
             theta = torch.acos(torch.clip(cos_theta, -1+self.eps, 1-self.eps))

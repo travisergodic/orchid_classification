@@ -34,4 +34,3 @@ def build_resnetv2_101x1_bitm_in21k(raw_model):
         nn.Identity()
     )
     return raw_model, 2048
-
