@@ -81,8 +81,7 @@ class Cutout_Iter_Hook(Base_Iter_Hook):
     def run_iter(self, model, data, targets, trainer, criterion):
         with torch.cuda.amp.autocast():
             # forward
-            data, targets = self.aug(data), self.aug(targets, params=self.aug._params)
-            predictions = model(data, targets)
+            predictions = model(self.aug(data), targets)
             loss = criterion(predictions, targets)
             
             # backward
