@@ -51,10 +51,18 @@ class Model(nn.Module):
 
 # FFN
 class FFN(nn.Module): 
-    def __init__(self, embed_size, num_classes, drop_p=0.):
+    def __init__(self, embed_size, num_classes, hidden_dim=None, drop_p=0.):
         super().__init__()
-        self.ffn = nn.Linear(embed_size, num_classes)
         self.drop = nn.Dropout(p=drop_p)
+        if hidden_dim is None:
+            self.ffn = nn.Linear(embed_size, num_classes)
+
+        else: 
+            self.ffn = nn.Sequential(
+                nn.Linear(embed_size, hidden_dim),
+                nn.ReLU(),
+                nn.Linear(hidden_dim, num_classes)
+            )
     
     def forward(self, embedding, targets=None):
         return self.ffn(self.drop(embedding))
@@ -62,7 +70,7 @@ class FFN(nn.Module):
     
 # Arcface: arcface 不支援與 mixup, cutmix 混用 
 class Arcface(nn.Module):
-    def __init__(self, embed_size, num_classes, s=2, m=0.05, eps=1e-12, drop_p=0.):
+    def __init__(self, embed_size, num_classes, hidden_dim=None, s=2, m=0.05, eps=1e-12, drop_p=0.):
         super().__init__()
         self._n_classes = num_classes
         self._embed_dim = embed_size
@@ -70,13 +78,23 @@ class Arcface(nn.Module):
         self._m = float(m)
         self.eps = eps
         self.drop = nn.Dropout(p=drop_p)
-        self.kernel = nn.Parameter(torch.Tensor(embed_size, num_classes))
+        if hidden_dim is None: 
+            self.hidden_layer = nn.Identity()
+            self.kernel = nn.Parameter(torch.Tensor(embed_size, num_classes))
+        else: 
+            self.hidden_layer = nn.Sequential(
+                nn.Linear(embed_size, hidden_dim), 
+                nn.ReLU()
+            )
+            self.kernel = nn.Parameter(torch.Tensor(hidden_dim, num_classes))
+            
         torch.nn.init.xavier_uniform_(self.kernel)
-        
-    def forward(self, embedding, targets):  # target: 
+
+    def forward(self, embedding, targets):
+        embedding = self.hidden_layer(self.drop(embedding))
         embedding = nn.functional.normalize(embedding, dim=1)
         kernel_norm = nn.functional.normalize(self.kernel, dim=0)
-        cos_theta = torch.mm(self.drop(embedding), kernel_norm)
+        cos_theta = torch.mm(embedding, kernel_norm)
         
         if self.training:  
             theta = torch.acos(torch.clip(cos_theta, -1+self.eps, 1-self.eps))
@@ -88,41 +106,6 @@ class Arcface(nn.Module):
                                       theta)
             return self._s * torch.cos(final_theta)    
         return self._s * cos_theta
-    
-
-# # arcface with mixup
-# class Arcface_Mixup(nn.Module):
-#     def __init__(self, num_classes, embed_size, s=2, m=0.05, eps=1e-12):
-#         super().__init__()
-#         self._n_classes = num_classes
-#         self._embed_dim = embed_size
-#         self._s = float(s)
-#         self._m = float(m)
-#         self.eps = eps
-#         # weights
-#         self.kernel = nn.Parameter(torch.Tensor(embed_size, num_classes))
-#         torch.nn.init.xavier_uniform_(self.kernel)
-        
-#     def forward(self, embedding, **kwargs): # target_a=None, target_b=None, lam=None): 
-#         embedding = nn.functional.normalize(embedding, dim=1)
-#         kernel_norm = nn.functional.normalize(self.kernel, dim=0)
-#         cos_theta = torch.mm(embedding, kernel_norm)
-        
-#         if not self.training:
-#             return self._s * cos_theta
-#         else: 
-#             target_a, target_b, lam = map(lambda x: kwargs[x], ('target_a', 'target_b', 'lam'))
-#             one_hot_a = nn.functional.one_hot(target_a, num_classes=self._n_classes)
-#             one_hot_b = nn.functional.one_hot(target_b, num_classes=self._n_classes) 
-#             one_hot_labels =  one_hot_a + one_hot_b
-#             margin = self._m * (lam * one_hot_a + (1-lam) * one_hot_b)
-#             del one_hot_a, one_hot_b 
-#             theta = torch.acos(torch.clip(cos_theta, -1+self.eps, 1-self.eps))
-#             selected_labels = torch.where(torch.gt(theta, math.pi - self._m),
-#                                           torch.zeros_like(one_hot_labels),
-#                                           one_hot_labels)
-#             final_theta = torch.where(selected_labels > 0, theta + margin, theta)
-#             return self._s * torch.cos(final_theta)
 
 CUSTOM_LAYER = {
     'arcface': Arcface, 
