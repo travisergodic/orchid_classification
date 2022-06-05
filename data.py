@@ -37,7 +37,7 @@ class FlowerDataset(Dataset):
 
 # transform 
 class Train_Preprocessor(nn.Module): 
-    def __init__(self, img_size=None, h_flip_p=0.2, v_flip_p=0.2):
+    def __init__(self, img_size=None, h_flip_p=0.5, v_flip_p=0.5):
         super().__init__()
         if img_size is not None: 
             self.img_size = img_size
@@ -45,8 +45,9 @@ class Train_Preprocessor(nn.Module):
         else: 
             self.resize_image = nn.Identity()
             
-        self.jitter = transforms.ColorJitter(0.15, 0.15)
+        self.jitter = transforms.ColorJitter(0.3, 0.3, 0.3)
         self.blur = transforms.GaussianBlur((1, 3))
+        self.perspect = transforms.RandomPerspective(distortion_scale=0.2, p=0.2)
         
         self.h_flip_p = h_flip_p
         self.v_flip_p = v_flip_p
@@ -75,7 +76,10 @@ class Train_Preprocessor(nn.Module):
 
         # Random vertical flipping
         if random.random() < self.v_flip_p:
-            img = F.vflip(img)       
+            img = F.vflip(img)    
+
+        # Random Perspective
+        img = self.perspect(img)
 
         return self.preprocess(img)
 
