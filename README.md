@@ -2,13 +2,16 @@
 
 ## 環境
 ```
-pip install timm
 pip install einops
 pip install transformers
 pip install ttach
 pip install kornia
 git clone https://github.com/travisergodic/orchid_classification.git
-cd /content/orchid_classification
+cd "/content/orchid_classification"
+git clone https://github.com/rwightman/pytorch-image-models
+cd pytorch-image-models 
+pip install -e .
+cd "/content/orchid_classification"
 git clone https://github.com/davda54/sam.git
 ```
 

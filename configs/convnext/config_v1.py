@@ -28,7 +28,7 @@ optim_dict = {
 
 # loss & metric
 loss_config = {
-    'loss_cls': 'Loss'
+    'loss_cls': 'Crossentropy_Loss'
 } 
 
 

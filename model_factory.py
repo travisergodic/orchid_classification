@@ -10,20 +10,31 @@ def get_base_model(model_dict):
     for attr in ['fc', 'head', 'classifier']: 
         if hasattr(raw_model, attr):
             if isinstance(getattr(raw_model, attr), nn.Sequential):
+                print('Find raw model attribute: {attr}')
+                print(getattr(raw_model, attr))
+
                 in_features = getattr(raw_model, attr).fc.in_features
                 setattr(
                     raw_model,
                     attr,
                     nn.Sequential(*list(getattr(raw_model, attr))[:-2])
                 )
+                print('Convert raw model attribute {attr} to:')
+                print(getattr(raw_model, attr))
                 
             else: 
+                print('Find raw model attribute: {attr}')
+                print(getattr(raw_model, attr))
+
                 in_features = getattr(raw_model, attr).in_features
                 setattr(
                     raw_model, 
                     attr, 
                     nn.Identity()
                 )
+                print('Convert raw model attribute {attr} to:')
+                print(getattr(raw_model, attr))
+
             return raw_model, in_features  
 
 

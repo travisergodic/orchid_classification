@@ -2,7 +2,7 @@ import os
 import argparse
 import torch
 from evaluate import Evaluator
-from data import build_test_transform
+from data import Test_Preprocessor
 from configs.test_config import * 
 
 
@@ -18,7 +18,7 @@ def make_prediction(model_paths, image_dir, do_tta):
     # load models
     models = [torch.load(model_path.strip()) for model_path in model_paths.split(",")]
 
-    test_image_transforms =  [build_test_transform(img_size) for img_size in test_img_size_list]
+    test_image_transforms =  [Test_Preprocessor(img_size) for img_size in test_img_size_list]
     evaluator = Evaluator(models, 
                           test_image_transforms, 
                           device=DEVICE, 
