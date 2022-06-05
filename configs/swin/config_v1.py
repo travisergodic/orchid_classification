@@ -17,7 +17,7 @@ num_workers = 2
 regularization_option = 'normal'
 
 # train
-batch_size = 16
+batch_size = 10
 num_epoch = 100
 decay_fn = lambda n: 1 # if n <=20 else 0.2 
 optim_dict = {
@@ -38,7 +38,7 @@ metric_list = ['accuracy', 'mix_score']
 checkpoint_path = None
 base_model_dict = {
     'model_cls': timm.create_model,
-    'model_name': 'swinv2_base_window12to24_192to384_22kft1k', 
+    'model_name': 'swin_large_patch4_window12_384_in22k', 
     'pretrained': True
 }
 

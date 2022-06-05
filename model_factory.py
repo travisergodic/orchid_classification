@@ -1,40 +1,34 @@
 import math
 import torch
 import torch.nn as nn
+import base_model_zoo
 
 __all__ = ['CUSTOM_LAYER', 'get_base_model', 'Model']
+
 
 # base_model
 def get_base_model(model_dict):
     raw_model = model_dict['model_cls'](**{k:model_dict[k] for k in model_dict if k != 'model_cls'})
+    if hasattr(base_model_zoo , 'build_' + model_dict['model_name']): 
+        return getattr(base_model_zoo, 'build_' + model_dict['model_name'])(raw_model)
+
     for attr in ['fc', 'head', 'classifier']: 
         if hasattr(raw_model, attr):
             if isinstance(getattr(raw_model, attr), nn.Sequential):
-                print('Find raw model attribute: {attr}')
-                print(getattr(raw_model, attr))
-
                 in_features = getattr(raw_model, attr).fc.in_features
                 setattr(
                     raw_model,
                     attr,
                     nn.Sequential(*list(getattr(raw_model, attr))[:-2])
                 )
-                print('Convert raw model attribute {attr} to:')
-                print(getattr(raw_model, attr))
                 
             else: 
-                print('Find raw model attribute: {attr}')
-                print(getattr(raw_model, attr))
-
                 in_features = getattr(raw_model, attr).in_features
                 setattr(
                     raw_model, 
                     attr, 
                     nn.Identity()
                 )
-                print('Convert raw model attribute {attr} to:')
-                print(getattr(raw_model, attr))
-
             return raw_model, in_features  
 
 

@@ -4,7 +4,7 @@ from torch.nn import functional as F
 
 __all__ = ['LOSS']
 
-class Loss(nn.Module): 
+class Crossentropy_Loss(nn.Module): 
     def __init__(self): 
         super().__init__()
         self.log_softmax = F.log_softmax
@@ -14,5 +14,5 @@ class Loss(nn.Module):
 
 
 LOSS = {
-    'Loss': Loss
+    'Crossentropy_Loss': Crossentropy_Loss
 }

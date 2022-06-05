@@ -9,8 +9,8 @@ from data import FlowerDataset, Train_Preprocessor, Test_Preprocessor
 from trainer import Trainer
 from hooks import *
 from model_factory import *
-from metric import * 
-from loss import * 
+from metrics import * 
+from losses import * 
 
 parser = argparse.ArgumentParser(description="Image classification for flowers!")
 parser.add_argument("--config_file", type=str)
