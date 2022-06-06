@@ -71,7 +71,7 @@ class Evaluator:
         pd.DataFrame(
             {
                 'filename': [os.path.basename(path) for path in paths],
-                'label': res_list
+                'category': res_list
             }
         ).to_csv('./predict_result.csv', index=False)
         print("save prediction results at './predict_result.csv'")
