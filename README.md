@@ -3,8 +3,8 @@
 ## 前期準備
 ```
 git clone https://github.com/travisergodic/orchid_classification.git
-pip install -r requirements.txt
 cd "./orchid_classification"
+pip install -r requirements.txt
 git clone https://github.com/rwightman/pytorch-image-models
 cd pytorch-image-models 
 pip install -e .
