@@ -1,7 +1,6 @@
 import os
 import torch 
 from torch import optim
-import transformers
 import timm
 
 # basic

@@ -1,7 +1,6 @@
 import os
 import torch 
 from torch import optim
-import transformers
 
 # basic
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"

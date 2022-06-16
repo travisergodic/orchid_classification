@@ -1,7 +1,7 @@
 import math
 import torch
 import torch.nn as nn
-import base_model_zoo
+import model_exceptions
 
 __all__ = ['CUSTOM_LAYER', 'get_base_model', 'Model']
 
@@ -9,8 +9,8 @@ __all__ = ['CUSTOM_LAYER', 'get_base_model', 'Model']
 # base_model
 def get_base_model(model_dict):
     raw_model = model_dict['model_cls'](**{k:model_dict[k] for k in model_dict if k != 'model_cls'})
-    if hasattr(base_model_zoo , 'build_' + model_dict['model_name']): 
-        return getattr(base_model_zoo, 'build_' + model_dict['model_name'])(raw_model)
+    if hasattr(model_exceptions , 'build_' + model_dict['model_name']): 
+        return getattr(model_exceptions, 'build_' + model_dict['model_name'])(raw_model)
 
     for attr in ['fc', 'head', 'classifier']: 
         if hasattr(raw_model, attr):
@@ -67,7 +67,7 @@ class FFN(nn.Module):
     def forward(self, embedding, targets=None):
         return self.ffn(self.drop(embedding))
 
-    
+
 # Arcface: arcface 不支援與 mixup, cutmix 混用 
 class Arcface(nn.Module):
     def __init__(self, embed_size, num_classes, hidden_dim=None, s=2, m=0.05, eps=1e-12, drop_p=0.):
