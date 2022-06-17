@@ -33,7 +33,7 @@ mkdir "./pred_data"
 
    2. **預測**
    ```
-   python predict.py --model_paths "./checkpoints/convnext_v10.pt" \
+   python predict.py --model_paths "./final_models/convnext_v10.pt" \
                    --target_dir "/content/orchid_classification/pred_data" \
                    --do_tta "False"
    ```
