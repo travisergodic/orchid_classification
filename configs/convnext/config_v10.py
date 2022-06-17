@@ -13,15 +13,15 @@ class_num = 219
 num_workers = 2
 
 # regularization 
-regularization_option = 'normal'
+regularization_option = 'noraml'
 
 # train
 batch_size = 16
 num_epoch = 100
-decay_fn = lambda n: 1 # if n <=20 else 0.2 
+decay_fn = lambda n: 1 if n <=25 else 0.2 
 optim_dict = {
     'optim_cls': optim.Adam, 
-    'lr': 2e-5, 
+    'lr': 1e-4, 
     # 'weight_decay': 1e-3
 }
 
@@ -34,7 +34,7 @@ loss_config = {
 metric_list = ['accuracy', 'mix_score']
 
 #  model
-checkpoint_path = "/content/orchid_classification/checkpoints/model_v1.pt"
+checkpoint_path = None
 base_model_dict = {
     'model_cls': timm.create_model,
     'model_name': 'convnext_base_384_in22ft1k', 
@@ -47,9 +47,10 @@ custom_layer_config_dict = {
     'layer_cls': 'ffn'
 }
 
+
 # save path 
-save_path = os.path.join("./checkpoints", "model_v1.pt")
-best_path = os.path.join("./checkpoints", "model_v1_best.pt")
+save_path = os.path.join("./checkpoints", "convnext_v10.pt")
+best_path = os.path.join("./checkpoints", "convnext_v10_best.pt")
 save_config = {
     "path": save_path,
     "freq": 1,

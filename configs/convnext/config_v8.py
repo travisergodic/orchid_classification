@@ -17,8 +17,8 @@ regularization_option = 'noraml'
 
 # train
 batch_size = 16
-num_epoch = 50
-decay_fn = lambda n: 1 if n <=20 else 0.2 
+num_epoch = 100
+decay_fn = lambda n: 1 if n <=40 else 0.2 
 optim_dict = {
     'optim_cls': optim.Adam, 
     'lr': 1e-4, 
@@ -44,10 +44,7 @@ base_model_dict = {
 hugging_face = False
 
 custom_layer_config_dict = {
-    'layer_cls': 'arcface',
-    's': 2,
-    'm': 0.05,
-    'drop_p': 0.2
+    'layer_cls': 'ffn'
 }
 
 
